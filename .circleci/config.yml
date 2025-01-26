@@ -5,15 +5,19 @@ orbs:
   node: circleci/node@5
 jobs:
   test-node:
-    # Install node dependencies and run tests
-    executor: node/default
+    working_directory: ~/app
+    docker:
+      - image: cimg/base:2022.09
     steps:
       - checkout
-      - node/install-packages:
-          pkg-manager: npm
+      - run:
+          name: Build container
+          command: |
+            docker build -t frontend -f Dockerfile.dev .
       - run:
           name: Run tests
-          command: npm test --passWithNoTests
+          command: |
+            docker run frontend npm run test    
   build-node:
     # Build node project
     executor: node/default
@@ -46,9 +50,9 @@ workflows:
   build-and-test:
     jobs:
       - test-node
-      - build-node:
-          requires:
-            - test-node
+    #  - build-node:
+    #      requires:
+    #        - test-node
     # - deploy:
     #     requires:
     #       - build-node
