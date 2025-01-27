@@ -2,7 +2,7 @@
 # Stacks detected: deps:node:.
 version: 2.1
 jobs:
-  test-node:
+  run-tests:
     working_directory: ~/app
     docker:
       - image: cimg/base:2022.09
@@ -17,7 +17,7 @@ jobs:
       - run:
           name: Run tests
           command: |
-            docker run frontend npm run test    
+            docker run frontend npm run test -- --coverage   
   build-node:
     # Build node project
     executor: node/default
@@ -49,10 +49,10 @@ jobs:
 workflows:
   build-and-test:
     jobs:
-      - test-node
+      - run-tests
     #  - build-node:
     #      requires:
-    #        - test-node
+    #        - run-tests
     # - deploy:
     #     requires:
     #       - build-node
