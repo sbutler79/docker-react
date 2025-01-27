@@ -17,7 +17,7 @@ jobs:
       - run:
           name: Run tests
           command: |
-            docker run frontend npm run test -- --coverage   
+            docker run -e CI=true frontend npm run test
   build-node:
     # Build node project
     executor: node/default
