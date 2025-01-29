@@ -18,41 +18,42 @@ jobs:
           name: Run tests
           command: |
             docker run -e CI=true frontend npm run test
-  build-node:
-    # Build node project
-    executor: node/default
+  build:
+    working_directory: ~/app
+    docker:
+      - image: cimg/base:2022.09
     steps:
       - checkout
-      - node/install-packages:
-          pkg-manager: npm
+      - setup_remote_docker:
+          docker_layer_caching: true
       - run:
-          command: npm run build
-      - run:
-          name: Create the ~/artifacts directory if it doesn't exist
-          command: mkdir -p ~/artifacts
-      # Copy output to artifacts dir
-      - run:
-          name: Copy artifacts
-          command: cp -R build dist public .output .next .docusaurus ~/artifacts 2>/dev/null || true
-      - store_artifacts:
-          path: ~/artifacts
-          destination: node-build
+          name: Build container
+          command: |
+            docker build -t frontend -f .
   deploy:
-    # This is an example deploy job, not actually used by the workflow
+    working_directory: ~/app
     docker:
-      - image: cimg/base:stable
+      - image: cimg/base:2022.09
     steps:
-      # Replace this with steps to deploy to users
-      - run:
-          name: deploy
-          command: '#e.g. ./deploy.sh'
+      - run: # Install the AWS CLI if it is not already included in the docker image
+            name: Install awscli
+            command: sudo pip install awscli
+        - run: # Deploy to S3 using the sync command
+            name: Deploy to S3
+            command: aws s3 sync docker-react elasticbeanstalk-eu-north-1-491085425180
+            #command: aws s3 sync <path/to/bucket> <s3://location/in/S3-to-deploy-to>
 workflows:
   build-and-test:
     jobs:
       - run-tests
-    #  - build-node:
-    #      requires:
-    #        - run-tests
-    # - deploy:
-    #     requires:
-    #       - build-node
+  build-deploy:
+    jobs:
+        - build:
+            branches:
+                only: main # Only deploys when the commit is on the Main branch
+        - deploy:
+            requires:
+            - build
+            filters:
+            branches:
+                only: main # Only deploys when the commit is on the Main branch
