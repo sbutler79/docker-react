@@ -31,13 +31,11 @@ jobs:
           command: |
             docker build -t frontend .
   deploy:
-    working_directory: ~/app
+    #working_directory: ~/app
     docker:
-      - image: cimg/base:2022.09
+      - image: cimg/aws:2022.06.1
     steps:
-      - run: # Install the AWS CLI if it is not already included in the docker image
-            name: Install awscli
-            command: sudo pip install awscli
+      - checkout
       - run: # Deploy to S3 using the sync command
             name: Deploy to S3
             command: aws s3 sync docker-react elasticbeanstalk-eu-north-1-491085425180
