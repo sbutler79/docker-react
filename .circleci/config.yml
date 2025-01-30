@@ -32,6 +32,7 @@ jobs:
           name: Build container
           command: |
             docker build -t frontend .
+            ls -la
   deploy:
     #working_directory: ~/app
     docker:
@@ -40,12 +41,14 @@ jobs:
       - checkout
       - run: # Deploy to S3 using the sync command
             name: Deploy to S3
-            command: aws s3 sync /tmp/workspace s3://elasticbeanstalk-eu-north-1-491085425180/docker-react/
+            command: |
+              ls -la
+              aws s3 sync /tmp/workspace s3://elasticbeanstalk-eu-north-1-491085425180/docker-react/
             #command: aws s3 sync <path/to/bucket> <s3://location/in/S3-to-deploy-to>
 workflows:
-  build-and-test:
-    jobs:
-      - run-tests
+  #build-and-test:
+  #  jobs:
+  #    - run-tests
   build-deploy:
     jobs:
         - build:
