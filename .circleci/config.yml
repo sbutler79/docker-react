@@ -19,10 +19,12 @@ jobs:
           command: |
             docker run -e CI=true frontend npm run test
   build:
-    working_directory: ~/app
+    #working_directory: ~/app
     docker:
       - image: cimg/base:2022.09
     steps:
+      - attach_workspace:
+          at: /tmp/workspace
       - checkout
       - setup_remote_docker:
           docker_layer_caching: true
@@ -38,7 +40,7 @@ jobs:
       - checkout
       - run: # Deploy to S3 using the sync command
             name: Deploy to S3
-            command: aws s3 sync build s3://elasticbeanstalk-eu-north-1-491085425180/docker-react/
+            command: aws s3 sync /tmp/workspace s3://elasticbeanstalk-eu-north-1-491085425180/docker-react/
             #command: aws s3 sync <path/to/bucket> <s3://location/in/S3-to-deploy-to>
 workflows:
   build-and-test:
