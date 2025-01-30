@@ -49,11 +49,14 @@ workflows:
   build-deploy:
     jobs:
         - build:
-            branches:
-                only: main # Only deploys when the commit is on the Main branch
+            filters:
+              branches.
+                only:
+                  - main # Only deploys when the commit is on the Main branch
         - deploy:
             requires:
             - build
             filters:
-            branches:
-                only: main # Only deploys when the commit is on the Main branch
+              branches.
+                only: 
+                  - main # Only deploys when the commit is on the Main branch
