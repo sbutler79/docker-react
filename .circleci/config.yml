@@ -38,7 +38,7 @@ jobs:
       - checkout
       - run: # Deploy to S3 using the sync command
             name: Deploy to S3
-            command: aws s3 sync docker-react elasticbeanstalk-eu-north-1-491085425180
+            command: aws s3 sync build s3://elasticbeanstalk-eu-north-1-491085425180/docker-react/
             #command: aws s3 sync <path/to/bucket> <s3://location/in/S3-to-deploy-to>
 workflows:
   build-and-test:
