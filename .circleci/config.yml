@@ -1,0 +1,62 @@
+# This config was automatically generated from your source code
+# Stacks detected: deps:node:.
+version: 2.1
+jobs:
+  run-tests:
+    working_directory: ~/app
+    docker:
+      - image: cimg/base:2022.09
+    steps:
+      - checkout
+      - setup_remote_docker:
+          docker_layer_caching: true
+      - run:
+          name: Build container
+          command: |
+            docker build -t frontend -f Dockerfile.dev .
+      - run:
+          name: Run tests
+          command: |
+            docker run -e CI=true frontend npm run test
+  build:
+    working_directory: ~/app
+    docker:
+      - image: cimg/base:2022.09
+    steps:
+      - checkout
+      - setup_remote_docker:
+          docker_layer_caching: true
+      - run:
+          name: Build container
+          command: |
+            docker build -t frontend -f .
+  deploy:
+    working_directory: ~/app
+    docker:
+      - image: cimg/base:2022.09
+    steps:
+      - run: # Install the AWS CLI if it is not already included in the docker image
+            name: Install awscli
+            command: sudo pip install awscli
+      - run: # Deploy to S3 using the sync command
+            name: Deploy to S3
+            command: aws s3 sync docker-react elasticbeanstalk-eu-north-1-491085425180
+            #command: aws s3 sync <path/to/bucket> <s3://location/in/S3-to-deploy-to>
+workflows:
+  build-and-test:
+    jobs:
+      - run-tests
+  build-deploy:
+    jobs:
+        - build:
+            filters:
+              branches:
+                only:
+                  - main # Only deploys when the commit is on the Main branch
+        - deploy:
+            requires:
+            - build
+            filters:
+              branches:
+                only: 
+                  - main # Only deploys when the commit is on the Main branch
