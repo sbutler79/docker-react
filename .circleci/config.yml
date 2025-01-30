@@ -36,14 +36,17 @@ jobs:
   deploy:
     #working_directory: ~/app
     docker:
-      - image: cimg/aws:2022.06.1
+      - image: frontend:latest #cimg/aws:2022.06.1
     steps:
       - checkout
+      - run: # Install the AWS CLI if it is not already included in the docker image
+            name: Install awscli
+            command: npm i aws-cli
       - run: # Deploy to S3 using the sync command
             name: Deploy to S3
             command: |
               ls -la
-              aws s3 sync /tmp/workspace s3://elasticbeanstalk-eu-north-1-491085425180/docker-react/
+              aws s3 sync ./ s3://elasticbeanstalk-eu-north-1-491085425180/docker-react/
             #command: aws s3 sync <path/to/bucket> <s3://location/in/S3-to-deploy-to>
 workflows:
   #build-and-test:
