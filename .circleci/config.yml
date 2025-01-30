@@ -38,7 +38,7 @@ jobs:
       - run: # Install the AWS CLI if it is not already included in the docker image
             name: Install awscli
             command: sudo pip install awscli
-        - run: # Deploy to S3 using the sync command
+      - run: # Deploy to S3 using the sync command
             name: Deploy to S3
             command: aws s3 sync docker-react elasticbeanstalk-eu-north-1-491085425180
             #command: aws s3 sync <path/to/bucket> <s3://location/in/S3-to-deploy-to>
