@@ -22,7 +22,7 @@ jobs:
           name: Run tests
           command: |
             docker run -e CI=true frontend npm run test
- build-and-push:
+  build-and-push:
     executor: docker-executor
     steps:
       - checkout
