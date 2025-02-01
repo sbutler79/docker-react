@@ -61,7 +61,7 @@ jobs:
           name: Update ECS Service with New Image
           command: |
             aws ecs update-service --cluster my-cluster \
-              --service my-service \
+              --service docker-react-service \
               --force-new-deployment
 
 
